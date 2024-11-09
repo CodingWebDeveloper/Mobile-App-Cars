@@ -4,7 +4,7 @@ import { SQLiteProvider } from "expo-sqlite";
 import { migrateDbIfNeeded } from "./src/utils/database";
 import Navigation from "./src/infrastructure/navigation";
 import { store } from "./src/app";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { ThemeProvider } from "styled-components/native";
 import { theme } from "./src/infrastructure/theme";
 import Toast from "react-native-toast-message";
