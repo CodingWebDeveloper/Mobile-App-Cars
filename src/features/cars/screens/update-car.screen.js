@@ -9,12 +9,14 @@ import { Text } from "react-native-paper";
 import { useSQLiteContext } from "expo-sqlite";
 import { showToast, TOAST_TYPE } from "../../../utils/notification";
 import { useFocusEffect } from "@react-navigation/native";
+import { uploadImage } from "../../../utils/cloudinary";
 
 const DEFAULT_CAR_INPUT = {
   model: "",
   brand: "",
   description: "",
   imageUri: null,
+  file: null,
 };
 
 const UpdateCarScreen = ({ route, navigation }) => {
@@ -26,10 +28,20 @@ const UpdateCarScreen = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async () => {
     try {
-      await updateCar(db, carId, carInput);
+      let imageUri = carInput.imageUri;
+      if (carInput.file) {
+        await uploadImage(
+          carInput.imageUri,
+          carInput.file.mimeType,
+          (uri) => (imageUri = uri)
+        );
+      }
+
+      await updateCar(db, carId, { ...carInput, imageUri });
       showToast(TOAST_TYPE.SUCCESS, "Successfully updated a car");
       navigation.navigate("Car Details", { carId });
     } catch (error) {
+      console.log(error);
       showToast(TOAST_TYPE.ERROR, "Error updating a car");
     }
   };

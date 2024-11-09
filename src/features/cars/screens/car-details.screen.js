@@ -13,7 +13,7 @@ import {
   PlaceholderImage,
   StyledButton,
 } from "../components/car-details.styles";
-import { getCarById } from "../../../utils/database";
+import { deleteCar, getCarById } from "../../../utils/database";
 import { useSQLiteContext } from "expo-sqlite";
 import { showToast, TOAST_TYPE } from "../../../utils/notification";
 import { useFocusEffect } from "@react-navigation/native";
@@ -40,7 +40,10 @@ const CarDetailsScreen = ({ route, navigation }) => {
       {
         text: "Delete",
         style: "destructive",
-        onPress: () => console.log("Car Deleted"),
+        onPress: async () => {
+          await deleteCar(db, carId);
+          navigation.navigate("Cars");
+        },
       },
     ]);
   };

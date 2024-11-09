@@ -7,12 +7,16 @@ import CarFormComponent from "../components/car-form.component";
 import { createCar } from "../../../utils/database";
 import { useSQLiteContext } from "expo-sqlite";
 import { showToast, TOAST_TYPE } from "../../../utils/notification";
+import { upload } from "cloudinary-react-native";
+import { cloudinary, options, uploadImage } from "../../../utils/cloudinary";
+import * as FileSystem from "expo-file-system";
 
 const DEFAULT_CAR_INPUT = {
   model: "",
   brand: "",
   description: "",
   imageUri: null,
+  file: null,
 };
 
 const CreateCarScreen = ({ navigation }) => {
@@ -22,10 +26,21 @@ const CreateCarScreen = ({ navigation }) => {
 
   const handleSubmit = async () => {
     try {
-      await createCar(db, carInput);
+      let imageUri = "";
+      if (carInput.file) {
+        await uploadImage(
+          carInput.imageUri,
+          carInput.file.mimeType,
+          (uri) => (imageUri = uri)
+        );
+      }
+
+      await createCar(db, { ...carInput, imageUri });
+
       showToast(TOAST_TYPE.SUCCESS, "Successfully created a car");
       navigation.navigate("Cars");
     } catch (error) {
+      console.log(error);
       showToast(TOAST_TYPE.ERROR, "Error creating a car");
     }
   };

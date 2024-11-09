@@ -6,6 +6,7 @@ import {
   StyledTextInput,
 } from "./create-car.styles";
 import { Avatar } from "react-native-paper";
+import * as ImagePicker from "expo-image-picker";
 
 const CarFormComponent = ({ setCarInput, carInput }) => {
   const theme = useTheme();
@@ -50,8 +51,9 @@ const CarFormComponent = ({ setCarInput, carInput }) => {
       quality: 1,
     });
 
+    const image = result.assets[0];
     if (!result.canceled) {
-      setCarInput({ ...carInput, imageUri: result.uri }); // Set the selected image URI to state
+      setCarInput({ ...carInput, imageUri: image.uri, file: image }); // Set the selected image URI to state
     }
   };
 
