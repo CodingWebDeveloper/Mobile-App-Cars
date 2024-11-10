@@ -15,7 +15,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUser } = authSlice.actions;
+export const { setUser, setIsLoading } = authSlice.actions;
 
 export const selectUser = (state) => state.auth.user;
 

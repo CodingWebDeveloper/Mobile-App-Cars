@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { SafeArea } from "../../../components/utility/safe-area.component";
-import { Button, Text } from "react-native-paper";
+import { ActivityIndicator, Button, Text } from "react-native-paper";
 import { AuthButton, Container, Input, Title } from "../components/auth.styles";
 import { loginRequest } from "../../../services/authentication/authentication.service";
 import { setUser } from "../../../app/slices/authSlice";
@@ -16,6 +16,7 @@ const RegisterScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatedPassword, setRepeatedPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [error, setError] = useState("");
 
@@ -37,13 +38,15 @@ const RegisterScreen = () => {
     }
 
     try {
-      const user = await createUserWithEmailAndPassword(auth, email, password);
-      dispatch(setUser(user));
+      setIsLoading(true);
+      await createUserWithEmailAndPassword(auth, email, password);
+      dispatch(setUser({ email }));
 
       setError("");
     } catch (e) {
       setError(e.toString());
     }
+    setIsLoading(false);
   };
 
   const handleNavigateLogin = () => {
@@ -82,6 +85,17 @@ const RegisterScreen = () => {
 
         <AuthButton mode="contained" onPress={handleRegister}>
           Register
+          {isLoading && (
+            <ActivityIndicator
+              size="small"
+              color="white"
+              style={{
+                alignSelf: "center",
+                justifyContent: "center",
+                paddingLeft: 10,
+              }}
+            />
+          )}
         </AuthButton>
       </Container>
       <Button mode="text" onPress={handleNavigateLogin}>

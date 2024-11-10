@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { Button, Text } from "react-native-paper";
+import { ActivityIndicator, Button, Text } from "react-native-paper";
 import { SafeArea } from "../../../components/utility/safe-area.component";
 import { AuthButton, Container, Input, Title } from "../components/auth.styles";
 import { loginRequest } from "../../../services/authentication/authentication.service";
@@ -14,6 +14,7 @@ const LoginScreen = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleLogin = async () => {
@@ -24,14 +25,16 @@ const LoginScreen = () => {
     }
 
     try {
-      const user = await loginRequest(auth, email, password);
-      dispatch(setUser(user));
+      setIsLoading(true);
+      await loginRequest(auth, email, password);
+      dispatch(setUser({ email }));
 
       setError("");
     } catch (e) {
       setError(e.toString());
     }
-    setError("");
+
+    setIsLoading(false);
   };
 
   const handleNavigateRegister = () => {
@@ -61,6 +64,17 @@ const LoginScreen = () => {
         />
         <AuthButton mode="contained" onPress={handleLogin}>
           Login
+          {isLoading && (
+            <ActivityIndicator
+              size="small"
+              color="white"
+              style={{
+                alignSelf: "center",
+                justifyContent: "center",
+                paddingLeft: 10,
+              }}
+            />
+          )}
         </AuthButton>
       </Container>
       <Button mode="text" onPress={handleNavigateRegister}>

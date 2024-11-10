@@ -1,7 +1,12 @@
 import React, { useCallback, useState } from "react";
 import { Alert } from "react-native";
 import { useTheme } from "styled-components/native";
-import { Divider, Text } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Divider,
+  MD2Colors,
+  Text,
+} from "react-native-paper";
 import {
   ButtonContainer,
   CarCard,
@@ -67,7 +72,13 @@ const CarDetailsScreen = ({ route, navigation }) => {
   );
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return (
+      <ActivityIndicator
+        animating={true}
+        size="large"
+        color={MD2Colors.blue400}
+      />
+    );
   }
 
   const { imageUri, brand, model, description } = carData ?? {};

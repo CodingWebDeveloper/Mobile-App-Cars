@@ -3,9 +3,16 @@ import { FlatList, StyleSheet } from "react-native";
 import CarInfoCard from "./car-info-card.component";
 import { getAllCars } from "../../../utils/database";
 import { useSQLiteContext } from "expo-sqlite";
-import { AnimatedFAB, Text } from "react-native-paper";
+import {
+  ActivityIndicator,
+  AnimatedFAB,
+  MD2Colors,
+  Text,
+} from "react-native-paper";
 import { Container } from "../../../components/utility/container.component";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { selectSearchTerm } from "../../../app/slices/searchSlice";
 
 const CarList = () => {
   const db = useSQLiteContext();
@@ -14,6 +21,8 @@ const CarList = () => {
   const [carsData, setCarsData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isExtended, setIsExtended] = useState(true);
+
+  const searchTerm = useSelector(selectSearchTerm);
 
   const onScroll = ({ nativeEvent }) => {
     const currentScrollPosition =
@@ -39,14 +48,31 @@ const CarList = () => {
     }, [fetchAllCars])
   );
 
+  const filteredCars =
+    carsData?.filter((car) => {
+      const brandLowerCase = car.brand.toLowerCase();
+      const modelLowerCase = car.model.toLowerCase();
+      const searchTermLowerCase = searchTerm.toLowerCase();
+
+      const isMatch =
+        brandLowerCase.includes(searchTermLowerCase) ||
+        modelLowerCase.includes(searchTermLowerCase);
+
+      return isMatch;
+    }) ?? [];
+
   return (
     <Container>
       {isLoading ? (
-        <Text>Loading...</Text>
+        <ActivityIndicator
+          animating={true}
+          size="large"
+          color={MD2Colors.blue400}
+        />
       ) : (
         <FlatList
           onScroll={onScroll}
-          data={carsData}
+          data={filteredCars}
           renderItem={({ item }) => <CarInfoCard car={item} />}
           keyExtractor={(item) => item.id}
         />

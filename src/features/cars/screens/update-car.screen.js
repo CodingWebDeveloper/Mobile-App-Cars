@@ -5,7 +5,7 @@ import CarFormComponent from "../components/car-form.component";
 import { useTheme } from "styled-components/native";
 import { SubmitButton, Title } from "../components/create-car.styles";
 import { getCarById, updateCar } from "../../../utils/database";
-import { Text } from "react-native-paper";
+import { ActivityIndicator, MD2Colors, Text } from "react-native-paper";
 import { useSQLiteContext } from "expo-sqlite";
 import { showToast, TOAST_TYPE } from "../../../utils/notification";
 import { useFocusEffect } from "@react-navigation/native";
@@ -65,7 +65,13 @@ const UpdateCarScreen = ({ route, navigation }) => {
   );
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return (
+      <ActivityIndicator
+        animating={true}
+        size="large"
+        color={MD2Colors.blue400}
+      />
+    );
   }
 
   return (
