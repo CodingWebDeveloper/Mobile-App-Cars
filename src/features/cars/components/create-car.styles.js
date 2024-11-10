@@ -16,10 +16,6 @@ export const Title = styled(Text)`
   color: ${(props) => props.theme.colors.ui.primary};
 `;
 
-export const StyledTextInput = styled(TextInput)`
-  margin-bottom: 15px;
-`;
-
 export const PhotoSection = styled(View)`
   flex-direction: row;
   align-items: center;

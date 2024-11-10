@@ -7,9 +7,8 @@ import CarFormComponent from "../components/car-form.component";
 import { createCar } from "../../../utils/database";
 import { useSQLiteContext } from "expo-sqlite";
 import { showToast, TOAST_TYPE } from "../../../utils/notification";
-import { upload } from "cloudinary-react-native";
-import { cloudinary, options, uploadImage } from "../../../utils/cloudinary";
-import * as FileSystem from "expo-file-system";
+import { uploadImage } from "../../../utils/cloudinary";
+import { validateForm } from "../../../utils/car-form-validation";
 
 const DEFAULT_CAR_INPUT = {
   model: "",
@@ -23,9 +22,20 @@ const CreateCarScreen = ({ navigation }) => {
   const db = useSQLiteContext();
   const theme = useTheme();
   const [carInput, setCarInput] = useState(DEFAULT_CAR_INPUT);
+  const [errors, setErrors] = useState({
+    brand: "",
+    model: "",
+    description: "",
+  });
 
   const handleSubmit = async () => {
     try {
+      const newErrors = validateForm(carInput);
+      setErrors(newErrors);
+
+      const isInvalid = Object.values(newErrors).some((e) => Boolean(e));
+      if (isInvalid) return;
+
       let imageUri = "";
       if (carInput.file) {
         await uploadImage(
@@ -49,7 +59,12 @@ const CreateCarScreen = ({ navigation }) => {
     <SafeArea>
       <Container>
         <Title variant="titleLarge">Create New Car</Title>
-        <CarFormComponent setCarInput={setCarInput} carInput={carInput} />
+        <CarFormComponent
+          setCarInput={setCarInput}
+          carInput={carInput}
+          setErrors={setErrors}
+          errors={errors}
+        />
         <SubmitButton
           mode="contained"
           onPress={handleSubmit}

@@ -1,14 +1,12 @@
 import React from "react";
 import { useTheme } from "styled-components/native";
-import {
-  CameraButton,
-  PhotoSection,
-  StyledTextInput,
-} from "./create-car.styles";
-import { Avatar } from "react-native-paper";
+import { CameraButton, PhotoSection } from "./create-car.styles";
+import { Avatar, Text, TextInput } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
+import { colors } from "../../../infrastructure/theme/colors";
+import { Spacer } from "../../../components/spacer/spacer.component";
 
-const CarFormComponent = ({ setCarInput, carInput }) => {
+const CarFormComponent = ({ setCarInput, carInput, errors, setErrors }) => {
   const theme = useTheme();
 
   const handleChangeModel = (text) => {
@@ -16,6 +14,7 @@ const CarFormComponent = ({ setCarInput, carInput }) => {
       ...carInput,
       model: text,
     });
+    setErrors({ ...errors, model: "" });
   };
 
   const handleChangeBrand = (text) => {
@@ -23,6 +22,8 @@ const CarFormComponent = ({ setCarInput, carInput }) => {
       ...carInput,
       brand: text,
     });
+
+    setErrors({ ...errors, brand: "" });
   };
 
   const handleChangeDescription = (text) => {
@@ -30,6 +31,8 @@ const CarFormComponent = ({ setCarInput, carInput }) => {
       ...carInput,
       description: text,
     });
+
+    setErrors({ ...errors, description: "" });
   };
 
   const handleAddPhoto = async () => {
@@ -59,21 +62,30 @@ const CarFormComponent = ({ setCarInput, carInput }) => {
 
   return (
     <>
-      <StyledTextInput
+      <TextInput
         label="Brand"
         value={carInput.brand}
         onChangeText={handleChangeBrand}
         mode="outlined"
       />
 
-      <StyledTextInput
+      {errors.brand && (
+        <Text style={{ color: colors.text.error }}>{errors.brand}</Text>
+      )}
+      <Spacer size="small" position="bottom" />
+
+      <TextInput
         label="Model"
         value={carInput.model}
         onChangeText={handleChangeModel}
         mode="outlined"
       />
+      {errors.model && (
+        <Text style={{ color: colors.text.error }}>{errors.model}</Text>
+      )}
+      <Spacer size="small" position="bottom" />
 
-      <StyledTextInput
+      <TextInput
         label="Description"
         value={carInput.description}
         onChangeText={handleChangeDescription}
@@ -81,6 +93,11 @@ const CarFormComponent = ({ setCarInput, carInput }) => {
         multiline
         numberOfLines={3}
       />
+      {errors.description && (
+        <Text style={{ color: colors.text.error }}>{errors.description}</Text>
+      )}
+
+      <Spacer size="small" position="bottom" />
 
       <PhotoSection>
         {carInput.imageUri ? (

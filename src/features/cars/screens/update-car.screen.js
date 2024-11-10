@@ -10,6 +10,7 @@ import { useSQLiteContext } from "expo-sqlite";
 import { showToast, TOAST_TYPE } from "../../../utils/notification";
 import { useFocusEffect } from "@react-navigation/native";
 import { uploadImage } from "../../../utils/cloudinary";
+import { validateForm } from "../../../utils/car-form-validation";
 
 const DEFAULT_CAR_INPUT = {
   model: "",
@@ -26,8 +27,20 @@ const UpdateCarScreen = ({ route, navigation }) => {
   const { carId } = route.params;
   const [carInput, setCarInput] = useState(DEFAULT_CAR_INPUT);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({
+    brand: "",
+    model: "",
+    description: "",
+  });
+
   const handleSubmit = async () => {
     try {
+      const newErrors = validateForm(carInput);
+      setErrors(newErrors);
+
+      const isInvalid = Object.values(newErrors).some((e) => Boolean(e));
+      if (isInvalid) return;
+
       let imageUri = carInput.imageUri;
       if (carInput.file) {
         await uploadImage(
@@ -79,7 +92,12 @@ const UpdateCarScreen = ({ route, navigation }) => {
       <Container>
         <Title variant="titleLarge">Update Car</Title>
 
-        <CarFormComponent setCarInput={setCarInput} carInput={carInput} />
+        <CarFormComponent
+          setCarInput={setCarInput}
+          carInput={carInput}
+          errors={errors}
+          setErrors={setErrors}
+        />
 
         <SubmitButton
           mode="contained"
