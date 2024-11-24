@@ -22,10 +22,14 @@ import { deleteCar, getCarById } from "../../../utils/database";
 import { useSQLiteContext } from "expo-sqlite";
 import { showToast, TOAST_TYPE } from "../../../utils/notification";
 import { useFocusEffect } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../../app/slices/authSlice";
 
 const CarDetailsScreen = ({ route, navigation }) => {
   const db = useSQLiteContext();
   const theme = useTheme();
+
+  const user = useSelector(selectUser);
 
   const [carData, setCarData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -81,7 +85,7 @@ const CarDetailsScreen = ({ route, navigation }) => {
     );
   }
 
-  const { imageUri, brand, model, description } = carData ?? {};
+  const { imageUri, brand, model, description, createdBy } = carData ?? {};
 
   return (
     <Container>
@@ -101,23 +105,25 @@ const CarDetailsScreen = ({ route, navigation }) => {
         </CarInfo>
       </CarCard>
 
-      <ButtonContainer>
-        <StyledButton
-          mode="contained"
-          onPress={handleEdit}
-          buttonColor={theme.colors.brand.primary}
-        >
-          Edit
-        </StyledButton>
+      {createdBy === user.id && (
+        <ButtonContainer>
+          <StyledButton
+            mode="contained"
+            onPress={handleEdit}
+            buttonColor={theme.colors.brand.primary}
+          >
+            Edit
+          </StyledButton>
 
-        <StyledButton
-          mode="contained"
-          onPress={handleDelete}
-          buttonColor={theme.colors.ui.error}
-        >
-          Delete
-        </StyledButton>
-      </ButtonContainer>
+          <StyledButton
+            mode="contained"
+            onPress={handleDelete}
+            buttonColor={theme.colors.ui.error}
+          >
+            Delete
+          </StyledButton>
+        </ButtonContainer>
+      )}
     </Container>
   );
 };

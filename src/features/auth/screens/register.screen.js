@@ -4,15 +4,18 @@ import { useNavigation } from "@react-navigation/native";
 import { SafeArea } from "../../../components/utility/safe-area.component";
 import { ActivityIndicator, Button, Text } from "react-native-paper";
 import { AuthButton, Container, Input, Title } from "../components/auth.styles";
-import { loginRequest } from "../../../services/authentication/authentication.service";
 import { setUser } from "../../../app/slices/authSlice";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../../firebase/config";
+import { createUser } from "../../../utils/database";
+import { useSQLiteContext } from "expo-sqlite";
 
 const RegisterScreen = () => {
+  const db = useSQLiteContext();
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatedPassword, setRepeatedPassword] = useState("");
@@ -21,7 +24,7 @@ const RegisterScreen = () => {
   const [error, setError] = useState("");
 
   const handleRegister = async () => {
-    const isValid = email && password && repeatedPassword;
+    const isValid = name && email && password && repeatedPassword;
     if (!isValid) {
       setError("All fields are required.");
       return;
@@ -40,7 +43,9 @@ const RegisterScreen = () => {
     try {
       setIsLoading(true);
       await createUserWithEmailAndPassword(auth, email, password);
-      dispatch(setUser({ email }));
+      const userInput = { email, name };
+      const dbUser = await createUser(db, userInput);
+      dispatch(setUser(dbUser));
 
       setError("");
     } catch (e) {
@@ -66,6 +71,13 @@ const RegisterScreen = () => {
           mode="outlined"
           keyboardType="email-address"
           autoCapitalize="none"
+        />
+
+        <Input
+          label="Name"
+          value={name}
+          onChangeText={setName}
+          mode="outlined"
         />
         <Input
           label="Password"

@@ -19,7 +19,7 @@ const AppNavigator = () => {
       await signOut(auth);
       dispatch(setUser(null));
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

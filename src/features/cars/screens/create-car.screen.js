@@ -9,11 +9,14 @@ import { useSQLiteContext } from "expo-sqlite";
 import { showToast, TOAST_TYPE } from "../../../utils/notification";
 import { uploadImage } from "../../../utils/cloudinary";
 import { validateForm } from "../../../utils/car-form-validation";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../../app/slices/authSlice";
 
 const DEFAULT_CAR_INPUT = {
   model: "",
   brand: "",
   description: "",
+  createdBy: null,
   imageUri: null,
   file: null,
 };
@@ -21,6 +24,9 @@ const DEFAULT_CAR_INPUT = {
 const CreateCarScreen = ({ navigation }) => {
   const db = useSQLiteContext();
   const theme = useTheme();
+
+  const user = useSelector(selectUser);
+
   const [carInput, setCarInput] = useState(DEFAULT_CAR_INPUT);
   const [errors, setErrors] = useState({
     brand: "",
@@ -45,12 +51,12 @@ const CreateCarScreen = ({ navigation }) => {
         );
       }
 
-      await createCar(db, { ...carInput, imageUri });
+      await createCar(db, { ...carInput, createdBy: user.id, imageUri });
 
       showToast(TOAST_TYPE.SUCCESS, "Successfully created a car");
       navigation.navigate("Cars");
     } catch (error) {
-      console.log(error);
+      console.error(error);
       showToast(TOAST_TYPE.ERROR, "Error creating a car");
     }
   };

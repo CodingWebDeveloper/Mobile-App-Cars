@@ -13,6 +13,7 @@ import { Container } from "../../../components/utility/container.component";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { selectSearchTerm } from "../../../app/slices/searchSlice";
+import { selectUser } from "../../../app/slices/authSlice";
 
 const CarList = () => {
   const db = useSQLiteContext();
@@ -23,6 +24,7 @@ const CarList = () => {
   const [isExtended, setIsExtended] = useState(true);
 
   const searchTerm = useSelector(selectSearchTerm);
+  const user = useSelector(selectUser);
 
   const onScroll = ({ nativeEvent }) => {
     const currentScrollPosition =
@@ -36,9 +38,14 @@ const CarList = () => {
   };
 
   const fetchAllCars = useCallback(async () => {
-    setIsLoading(true);
-    const data = await getAllCars(db);
-    setCarsData(data);
+    try {
+      setIsLoading(true);
+      const data = await getAllCars(db, user.id);
+      setCarsData(data);
+    } catch (error) {
+      console.error("Error occurred", error);
+    }
+
     setIsLoading(false);
   }, [db]);
 

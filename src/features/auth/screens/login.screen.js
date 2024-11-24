@@ -7,8 +7,11 @@ import { loginRequest } from "../../../services/authentication/authentication.se
 import { useDispatch } from "react-redux";
 import { setUser } from "../../../app/slices/authSlice";
 import { auth } from "../../../firebase/config";
+import { getUserByEmail } from "../../../utils/database";
+import { useSQLiteContext } from "expo-sqlite";
 
 const LoginScreen = () => {
+  const db = useSQLiteContext();
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
@@ -27,7 +30,8 @@ const LoginScreen = () => {
     try {
       setIsLoading(true);
       await loginRequest(auth, email, password);
-      dispatch(setUser({ email }));
+      const dbUser = await getUserByEmail(db, email);
+      dispatch(setUser(dbUser));
 
       setError("");
     } catch (e) {

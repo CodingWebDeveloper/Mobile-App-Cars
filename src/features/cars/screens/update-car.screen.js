@@ -54,7 +54,7 @@ const UpdateCarScreen = ({ route, navigation }) => {
       showToast(TOAST_TYPE.SUCCESS, "Successfully updated a car");
       navigation.navigate("Car Details", { carId });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       showToast(TOAST_TYPE.ERROR, "Error updating a car");
     }
   };
